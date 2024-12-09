@@ -23,7 +23,6 @@ func main() {
 	// Loop over all lines in the file and print them.
 	for scanner.Scan() {
 		line := scanner.Text()
-		star2 := strings.Split(line, "do")
 		s := re.FindAllStringSubmatch(line, -1)
 		// fmt.Println(s)
 		if star == 1 {
@@ -43,8 +42,10 @@ func main() {
 				}
 			}
 		} else if star == 2 {
+			fmt.Println(line)
+			star2 := strings.Split(line, "do")
 			for i := 0; i < len(star2); i++ {
-				if star2[i][0:2] == "()" {
+				if star2[i][0:2] == "()" || i == 0 {
 					fmt.Println("Multiply me")
 					fmt.Println(star2[i])
 				} else if star2[i][0:3] == "n't" {
