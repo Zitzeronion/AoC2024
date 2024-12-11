@@ -11,10 +11,12 @@ func main() {
 	f, _ := os.Open("exampleinput_4.txt")
 	xmasLRcounter := 0
 	xmasRLcounter := 0
-	// data, _ := os.ReadFile("exampleinput_4.txt")
+	data, _ := os.ReadFile("exampleinput_4.txt")
 	// Create a new Scanner for the file.
 	scanner := bufio.NewScanner(f)
 	// Loop over all lines in the file and print them.
+	size := (len(string(data)))
+	fmt.Println(size)
 	for scanner.Scan() {
 		line := scanner.Text()
 		// fmt.Println(string(line[0]))
