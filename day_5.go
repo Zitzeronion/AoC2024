@@ -20,6 +20,7 @@ func main() {
 	var left []int
 	var right []int
 	var update []string
+	var nUpdates = map[int][]int{}
 	// Loop over all lines in the file and print them.
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -36,9 +37,19 @@ func main() {
 		left = append(left, le)
 		right = append(right, ri)
 	}
+	for i := 0; i < len(update); i++ {
+		var numbers []int
+		nums := strings.Split(update[i], ",")
+		for j := 0; j < len(nums); j++ {
+			n, _ := strconv.Atoi(nums[j])
+			numbers = append(numbers, n)
+		}
+		nUpdates[i] = numbers
+	}
+	fmt.Println(nUpdates, len(nUpdates))
+
 	var RuleList = map[int][]int{}
 	var checked []int
-
 	getSorted(left, right, checked, RuleList)
 	// fmt.Println("Does it work? ", RuleList)
 	var notResults []int
@@ -55,16 +66,18 @@ func main() {
 					} else {
 						notResults = append(notResults, t)
 					}
-					// fmt.Println("Why ", nUp, "this", toCheck, "at list ", t)
 					break
 				}
 			}
 		}
 		// fmt.Println("UpateList ", t, "value ", easyNum)
 	}
-	fmt.Println("hmm: ", notResults)
 
 	fmt.Println("Solution star 1: ", sumUp(update, notResults))
+	// var sortedM []int
+	for i := 0; i < len(nUpdates); i++ {
+
+	}
 }
 func getSorted(left []int, right []int, checked []int, RuleList map[int][]int) {
 	for i := 0; i < len(left); i++ {
