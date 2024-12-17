@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	filename := "input_5.txt"
+	filename := "exampleinput_5.txt"
 	// Open the file
 	f, _ := os.Open(filename)
 	// fmt.Print(len(text))
@@ -38,22 +38,8 @@ func main() {
 	}
 	var RuleList = map[int][]int{}
 	var checked []int
-	for i := 0; i < len(left); i++ {
-		var nRule []int
-		n := left[i]
-		if slices.Contains(checked, n) {
-		} else {
-			nRule = append(nRule, right[i])
-			for j := i + 1; j < len(left); j++ {
-				if n == left[j] {
-					nRule = append(nRule, right[j])
-				}
-			}
-			// fmt.Println("Does it work? ", nRule, left[i])
-			RuleList[left[i]] = nRule
-		}
-		checked = append(checked, n)
-	}
+
+	getSorted(left, right, checked, RuleList)
 	// fmt.Println("Does it work? ", RuleList)
 	var notResults []int
 	for t := 0; t < len(update); t++ {
@@ -77,13 +63,55 @@ func main() {
 		// fmt.Println("UpateList ", t, "value ", easyNum)
 	}
 	fmt.Println("hmm: ", notResults)
-	sum := 0
-	for i := 0; i < len(notResults); i++ {
-		nums := strings.Split(update[i], ",")
-		mid := int(math.Ceil(float64(len(nums) / 2.0)))
-		res, _ := strconv.Atoi(nums[mid])
-		// fmt.Println(res)
-		sum += res
+
+	fmt.Println("Solution star 1: ", sumUp(update, notResults))
+}
+func getSorted(left []int, right []int, checked []int, RuleList map[int][]int) {
+	for i := 0; i < len(left); i++ {
+		var nRule []int
+		n := left[i]
+		if slices.Contains(checked, n) {
+		} else {
+			nRule = append(nRule, right[i])
+			for j := i + 1; j < len(left); j++ {
+				if n == left[j] {
+					nRule = append(nRule, right[j])
+				}
+			}
+			// fmt.Println("Does it work? ", nRule, left[i])
+			RuleList[left[i]] = nRule
+		}
+		checked = append(checked, n)
 	}
-	fmt.Println("Solution: ", sum)
+}
+func sumUp(update []string, notResults []int) int {
+	sum := 0
+	for i := 0; i < len(update); i++ {
+		if slices.Contains(notResults, i) {
+			continue
+		} else {
+			nums := strings.Split(update[i], ",")
+			mid := int(math.Ceil(float64(len(nums) / 2.0)))
+			res, _ := strconv.Atoi(nums[mid])
+			// fmt.Println(res)
+			sum += res
+		}
+	}
+	return sum
+}
+func sumUpStar2(update []string, notResults []int) int {
+	sum := 0
+	for i := 0; i < len(update); i++ {
+		if slices.Contains(notResults, i) {
+			nums := strings.Split(update[i], ",")
+
+			mid := int(math.Ceil(float64(len(nums) / 2.0)))
+			res, _ := strconv.Atoi(nums[mid])
+			// fmt.Println(res)
+			sum += res
+		} else {
+			continue
+		}
+	}
+	return sum
 }
