@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	filename := "exampleinput_5.txt"
+	filename := "input_5.txt"
 	// Open the file
 	f, _ := os.Open(filename)
 	// fmt.Print(len(text))
@@ -46,7 +46,7 @@ func main() {
 		}
 		nUpdates[i] = numbers
 	}
-	fmt.Println(nUpdates, len(nUpdates))
+	// fmt.Println(nUpdates, len(nUpdates))
 
 	var RuleList = map[int][]int{}
 	var checked []int
@@ -70,14 +70,10 @@ func main() {
 				}
 			}
 		}
-		// fmt.Println("UpateList ", t, "value ", easyNum)
 	}
 
 	fmt.Println("Solution star 1: ", sumUp(update, notResults))
-	// var sortedM []int
-	for i := 0; i < len(nUpdates); i++ {
-
-	}
+	fmt.Println("Solution star 2 stupid: ", sumUpStar2(update, notResults, RuleList))
 }
 func getSorted(left []int, right []int, checked []int, RuleList map[int][]int) {
 	for i := 0; i < len(left); i++ {
@@ -91,7 +87,6 @@ func getSorted(left []int, right []int, checked []int, RuleList map[int][]int) {
 					nRule = append(nRule, right[j])
 				}
 			}
-			// fmt.Println("Does it work? ", nRule, left[i])
 			RuleList[left[i]] = nRule
 		}
 		checked = append(checked, n)
@@ -112,19 +107,72 @@ func sumUp(update []string, notResults []int) int {
 	}
 	return sum
 }
-func sumUpStar2(update []string, notResults []int) int {
+func sumUpStar2(update []string, notResults []int, RuleList map[int][]int) int {
 	sum := 0
 	for i := 0; i < len(update); i++ {
+		var intNums []int
 		if slices.Contains(notResults, i) {
 			nums := strings.Split(update[i], ",")
+			for j := 0; j < len(nums); j++ {
+				hmm, _ := strconv.Atoi(nums[j])
+				intNums = append(intNums, hmm)
+			}
+			score := 0
+			for s := 1; s < len(intNums); s++ {
+				score += len(intNums) - s
+			}
+			fmt.Println(score)
+			for p := make([]int, len(intNums)); p[0] < len(p); nextPerm(p) {
+				newList := getPerm(intNums, p)
+				fmt.Println(newList)
+				correct := 0
+				for ii := len(newList) - 1; ii > -1; ii-- {
+					n := newList[ii]
+					toCheck := RuleList[n]
+					// fmt.Println("Single element : ", n, " and a list of rules ", toCheck)
+					for jj := ii - 1; jj > -1; jj-- {
+						nUp := newList[jj]
+						if slices.Contains(toCheck, nUp) {
+							// fmt.Println(nUp, "is in front of", n, "and a list of rules", toCheck)
+							// fmt.Println(nUp, "should be after", n)
+							correct -= 10
+							break
+							// fmt.Println(correct, newList)
+						} else {
+							// fmt.Println("Is this sorted? ", newList)
+							// fmt.Println(nUp, "should be in front of", n)
+							correct += 1
+							// fmt.Println(correct, nUp, n, newList)
+						}
+					}
 
-			mid := int(math.Ceil(float64(len(nums) / 2.0)))
-			res, _ := strconv.Atoi(nums[mid])
-			// fmt.Println(res)
-			sum += res
-		} else {
-			continue
+					if correct == score {
+						// fmt.Println("maybe?", newList)
+						mid := int(math.Ceil(float64(len(newList) / 2.0)))
+						sum += newList[mid]
+						break
+					}
+				}
+			}
 		}
 	}
 	return sum
+}
+
+func nextPerm(p []int) {
+	for i := len(p) - 1; i >= 0; i-- {
+		if i == 0 || p[i] < len(p)-i-1 {
+			p[i]++
+			return
+		}
+		p[i] = 0
+	}
+}
+
+func getPerm(orig, p []int) []int {
+	result := append([]int{}, orig...)
+	for i, v := range p {
+		result[i], result[i+v] = result[i+v], result[i]
+	}
+	return result
 }
