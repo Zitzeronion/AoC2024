@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	filename := "input_5.txt"
+	filename := "exampleinput_5.txt"
 	// Open the file
 	f, _ := os.Open(filename)
 	// fmt.Print(len(text))
@@ -73,8 +73,9 @@ func main() {
 	}
 
 	fmt.Println("Solution star 1: ", sumUp(update, notResults))
-	fmt.Println("Solution star 2 stupid: ", sumUpStar2(update, notResults, RuleList))
+	fmt.Println("Solution star 2 stupid: ", sumUpStar2_2(update, notResults, RuleList))
 }
+
 func getSorted(left []int, right []int, checked []int, RuleList map[int][]int) {
 	for i := 0; i < len(left); i++ {
 		var nRule []int
@@ -107,6 +108,7 @@ func sumUp(update []string, notResults []int) int {
 	}
 	return sum
 }
+
 func sumUpStar2(update []string, notResults []int, RuleList map[int][]int) int {
 	sum := 0
 	for i := 0; i < len(update); i++ {
@@ -133,8 +135,8 @@ func sumUpStar2(update []string, notResults []int, RuleList map[int][]int) int {
 					for jj := ii - 1; jj > -1; jj-- {
 						nUp := newList[jj]
 						if slices.Contains(toCheck, nUp) {
-							// fmt.Println(nUp, "is in front of", n, "and a list of rules", toCheck)
-							// fmt.Println(nUp, "should be after", n)
+							fmt.Println(nUp, "is in front of", n, "and a list of rules", toCheck)
+							fmt.Println(nUp, "should be after", n)
 							correct -= 10
 							break
 							// fmt.Println(correct, newList)
@@ -156,6 +158,61 @@ func sumUpStar2(update []string, notResults []int, RuleList map[int][]int) int {
 			}
 		}
 	}
+	return sum
+}
+
+func sumUpStar2_2(update []string, notResults []int, RuleList map[int][]int) int {
+	sum := 0
+	for i := 0; i < len(update); i++ {
+		var intNums []int
+		if slices.Contains(notResults, i) {
+			nums := strings.Split(update[i], ",")
+			for j := 0; j < len(nums); j++ {
+				hmm, _ := strconv.Atoi(nums[j])
+				intNums = append(intNums, hmm)
+			}
+			score := 0
+			for s := 1; s < len(intNums); s++ {
+				// fmt.Println("How does score grow?", score)
+				score += len(intNums) - s
+			}
+			fmt.Println(intNums)
+			// fmt.Println(score)
+			correct := 0
+
+			for ii := len(intNums) - 1; ii > -1; ii-- {
+				n := intNums[ii]
+				toCheck := RuleList[n]
+				// fmt.Println("Single element : ", n, " and a list of rules ", toCheck)
+				for jj := ii - 1; jj > -1; jj-- {
+					nUp := intNums[jj]
+					if slices.Contains(toCheck, nUp) {
+						// fmt.Println(nUp, "is in front of", n, "and a list of rules", toCheck)
+						fmt.Println(nUp, "should be after", n)
+						intNums[jj] = n
+						intNums[ii] = nUp
+						correct -= 10
+						fmt.Println(correct, intNums)
+						break
+
+					} else {
+						// fmt.Println("Is this sorted? ", newList)
+						// fmt.Println(nUp, "should be in front of", n)
+						correct += 1
+						// fmt.Println(correct, nUp, n, newList)
+					}
+				}
+			}
+
+			if correct == score {
+				// fmt.Println("maybe?", newList)
+				mid := int(math.Ceil(float64(len(intNums) / 2.0)))
+				sum += intNums[mid]
+				break
+			}
+		}
+	}
+
 	return sum
 }
 
