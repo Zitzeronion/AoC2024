@@ -16,8 +16,8 @@ func main() {
 	}
 	lines := strings.Split(string(content), "\n")
 	fmt.Println(lines[0])
-	n := len(lines)
-	var text [n][n]string
+	nchars := len(lines)
+	var text [nchars][n]string
 	for i := 0; i < len(lines); i++ {
 		newArr := strings.Split(lines[i], "") // split on each char
 		fmt.Println(newArr)
