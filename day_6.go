@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	filename := "input_6.txt"
+	filename := "exampleinput_6.txt"
 	// fmt.Print(len(text))
 	// Loop over all lines in the file and print them.
 	content, err := os.ReadFile(filename)
@@ -19,6 +19,7 @@ func main() {
 	// fmt.Println(lines[0])
 
 	input := make([][]string, n)
+	inputMod := make([][]string, n)
 	path := make([][]int, n)
 
 	for i := 0; i < n; i++ {
@@ -29,6 +30,7 @@ func main() {
 		// fmt.Println(newArr[2])
 		for chars := 0; chars < len(newArr); chars++ {
 			input[i] = append(input[i], newArr[chars])
+			inputMod[i] = append(inputMod[i], newArr[chars])
 			path[i] = append(path[i], 0)
 		}
 
@@ -37,10 +39,28 @@ func main() {
 	// fmt.Println(input[1])
 	// fmt.Println(len(input[1]))
 	guard := getPos(input)
-	// fmt.Println(guard)
+	// Star 1
 	updateGuard := moveGuard(guard, input, path)
 	fmt.Println(updateGuard)
-
+	// Star 2
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if inputMod[i][j] == "^" {
+				inputMod[i][j] = "."
+			}
+		}
+	}
+	fmt.Println("Now the second star:")
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if inputMod[i][j] == "." {
+				inputMod[i][j] = "#"
+			}
+			fmt.Println("Modification at: [", i, " ", j, "]")
+			updateGuard2 := moveGuard(guard, inputMod, path)
+			fmt.Println(updateGuard2)
+		}
+	}
 	// fmt.Println(nUpdates, len(nUpdates))
 }
 
@@ -62,6 +82,8 @@ func getPos(field [][]string) [2]int {
 }
 
 func moveGuard(guard [2]int, field [][]string, path [][]int) [2]int {
+	count := 0
+	infloop := 0
 	n := len(field[1])
 	for {
 		for i := guard[0] - 1; i > -1; i-- {
@@ -77,6 +99,7 @@ func moveGuard(guard [2]int, field [][]string, path [][]int) [2]int {
 				fmt.Println("Reached the border!")
 				break
 			}
+			count++
 		}
 		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
 			break
@@ -94,6 +117,7 @@ func moveGuard(guard [2]int, field [][]string, path [][]int) [2]int {
 				fmt.Println("Reached the border!")
 				break
 			}
+			count++
 		}
 		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
 			break
@@ -111,6 +135,7 @@ func moveGuard(guard [2]int, field [][]string, path [][]int) [2]int {
 				fmt.Println("Reached the border!")
 				break
 			}
+			count++
 		}
 		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
 			break
@@ -128,8 +153,14 @@ func moveGuard(guard [2]int, field [][]string, path [][]int) [2]int {
 				fmt.Println("Reached the border!")
 				break
 			}
+			count++
 		}
 		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
+			break
+		}
+		if count > 200 {
+			fmt.Println(infloop)
+			infloop++
 			break
 		}
 	}
@@ -139,7 +170,11 @@ func moveGuard(guard [2]int, field [][]string, path [][]int) [2]int {
 			sum += path[i][j]
 		}
 	}
-	fmt.Println(sum)
+	fmt.Println(sum, "and the count ", count)
+	if infloop > 0 {
+		fmt.Println("This infinite loop")
+	}
+
 	// fmt.Println(path)
 	return guard
 }
