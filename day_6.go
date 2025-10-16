@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	filename := "exampleinput_6.txt"
+	filename := "input_6.txt"
 	// fmt.Print(len(text))
 	// Loop over all lines in the file and print them.
 	content, err := os.ReadFile(filename)
@@ -40,8 +40,9 @@ func main() {
 	// fmt.Println(len(input[1]))
 	guard := getPos(input)
 	guard2 := guard
+	infloops := 0
 	// Star 1
-	updateGuard := moveGuard(guard, input, path, 1, 1)
+	updateGuard := moveGuard(guard, input, path, 1, 1, infloops)
 	fmt.Println(updateGuard)
 	// Star 2
 
@@ -53,16 +54,16 @@ func main() {
 			}
 		}
 	}
-	for i := 0; i < 2; i++ {
-		for j := 0; j < 5; j++ {
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
 			guard = guard2
 			path = resetPath(path)
 			if inputMod[i][j] == "." {
 				inputMod[i][j] = "#"
 			}
-			fmt.Println("Modification at: [", i, " ", j, "] and guard at:", guard)
-			updateGuard2 := moveGuard(guard, inputMod, path, i, j)
-			fmt.Println(updateGuard2)
+			// fmt.Println("Modification at: [", i, " ", j, "] and guard at:", guard)
+			infloops = infloops + moveGuardLoop(guard, inputMod, path, i, j)
+			// fmt.Println(updateGuard2)
 			if input[i][j] == "#" {
 				inputMod[i][j] = "#"
 			} else {
@@ -70,7 +71,7 @@ func main() {
 			}
 		}
 	}
-	// fmt.Println(nUpdates, len(nUpdates))
+	fmt.Println("Number of infinite loops:", infloops)
 }
 func resetPath(path [][]int) [][]int {
 	n := len(path[1])
@@ -94,16 +95,15 @@ func getPos(field [][]string) [2]int {
 				field[i][j] = "."
 			}
 		}
-
 	}
 	return pos
 }
 
-func moveGuard(guard [2]int, field [][]string, path [][]int, i int, j int) [2]int {
+func moveGuard(guard [2]int, field [][]string, path [][]int, i int, j int, loops int) [2]int {
 	count := 0
 	infloop := 0
 	n := len(field[1])
-	fmt.Println("This should be a #", field[i][j])
+	// fmt.Println("This should be a #", field[i][j])
 	for {
 		for i := guard[0] - 1; i > -1; i-- {
 			if field[i][guard[1]] == "." {
@@ -114,9 +114,6 @@ func moveGuard(guard [2]int, field [][]string, path [][]int, i int, j int) [2]in
 				count++
 			} else if field[i][guard[1]] == "#" {
 				// fmt.Println("Up dead end", guard) // up dead end
-				break
-			} else if i == 0 {
-				fmt.Println("Reached the border!")
 				break
 			}
 		}
@@ -133,9 +130,6 @@ func moveGuard(guard [2]int, field [][]string, path [][]int, i int, j int) [2]in
 			} else if field[guard[0]][i] == "#" {
 				// fmt.Println("Right dead end", guard)
 				break
-			} else if guard[1] == n-1 {
-				fmt.Println("Reached the border!")
-				break
 			}
 		}
 		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
@@ -150,9 +144,6 @@ func moveGuard(guard [2]int, field [][]string, path [][]int, i int, j int) [2]in
 				count++
 			} else if field[i][guard[1]] == "#" {
 				// fmt.Println("Bottom dead end", guard)
-				break
-			} else if guard[0] == n-1 {
-				fmt.Println("Reached the border!")
 				break
 			}
 		}
@@ -169,16 +160,12 @@ func moveGuard(guard [2]int, field [][]string, path [][]int, i int, j int) [2]in
 			} else if field[guard[0]][i] == "#" {
 				// fmt.Println("Left dead end", guard)
 				break
-			} else if i == 0 {
-				fmt.Println("Reached the border!")
-				break
 			}
 		}
 		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
 			break
 		}
 		if count > 200 {
-			fmt.Println(infloop)
 			infloop++
 			break
 		}
@@ -187,17 +174,106 @@ func moveGuard(guard [2]int, field [][]string, path [][]int, i int, j int) [2]in
 	for i := 0; i < n; i++ {
 		for j := 0; j < n; j++ {
 			sum += path[i][j]
-			fmt.Print(path[i][j], "\t")
+			// fmt.Print(path[i][j], "\t")
 		}
-		fmt.Println()
+		// fmt.Println()
 	}
 	// fmt.Println(sum, "and the count ", count)
 
 	// fmt.Println(path)
 	if infloop > 0 {
-		fmt.Println("This infinite loop")
+		loops++
+		fmt.Println("There are", infloop, "infinite loops", loops)
 	}
 
 	// fmt.Println(path)
 	return guard
+}
+
+func moveGuardLoop(guard [2]int, field [][]string, path [][]int, i int, j int) int {
+	count := 0
+	infloop := 0
+	n := len(field[1])
+	// fmt.Println("This should be a #", field[i][j])
+	for {
+		for i := guard[0] - 1; i > -1; i-- {
+			if field[i][guard[1]] == "." {
+				// Move horizontal
+				guard[0] = i
+				// fmt.Println(guard)
+				path[i][guard[1]] = 1
+				count++
+			} else if field[i][guard[1]] == "#" {
+				// fmt.Println("Up dead end", guard) // up dead end
+				break
+			}
+		}
+		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
+			break
+		}
+		for i := guard[1] + 1; i < n; i++ {
+			if field[guard[0]][i] == "." {
+				// Move to the right
+				guard[1] = i
+				// fmt.Println(guard)
+				path[guard[0]][i] = 1
+				count++
+			} else if field[guard[0]][i] == "#" {
+				// fmt.Println("Right dead end", guard)
+				break
+			}
+		}
+		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
+			break
+		}
+		for i := guard[0] + 1; i < n; i++ {
+			if field[i][guard[1]] == "." {
+				// Move down
+				guard[0] = i
+				// fmt.Println(guard)
+				path[i][guard[1]] = 1
+				count++
+			} else if field[i][guard[1]] == "#" {
+				// fmt.Println("Bottom dead end", guard)
+				break
+			}
+		}
+		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
+			break
+		}
+		for i := guard[1] - 1; i > -1; i-- {
+			if field[guard[0]][i] == "." {
+				// Move to the left
+				guard[1] = i
+				// fmt.Println(guard)
+				path[guard[0]][i] = 1
+				count++
+			} else if field[guard[0]][i] == "#" {
+				// fmt.Println("Left dead end", guard)
+				break
+			}
+		}
+		if guard[0] == 0 || guard[0] == n-1 || guard[1] == 0 || guard[1] == n-1 {
+			break
+		}
+		if count > 20000 {
+			infloop++
+			break
+		}
+	}
+	sum := 0
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			sum += path[i][j]
+			// fmt.Print(path[i][j], "\t")
+		}
+		// fmt.Println()
+	}
+	// fmt.Println(sum, "and the count ", count)
+
+	// fmt.Println(path)
+	if infloop > 0 {
+		fmt.Println("There are", infloop, "infinite loops")
+	}
+	return infloop
 }
