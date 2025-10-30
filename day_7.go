@@ -16,13 +16,13 @@ func main() {
 	}
 	lines := strings.Split(string(content), "\n")
 	n := len(lines) - 1
-	// fmt.Println(lines[0])
+	fmt.Println(lines[0])
 
 	for i := 0; i < n; i++ {
-		newArr := strings.Split(lines[i], "") // split on each char
-
-		// fmt.Println(newArr)
-		fmt.Println(newArr)
+		leftside := strings.Split(lines[i], ":") // split on each char
+		fmt.Println("Result", leftside[0])
+		rightside := strings.Fields(leftside[1])
+		fmt.Println("Terms", rightside)
 		// fmt.Println(newArr[2])
 
 	}
